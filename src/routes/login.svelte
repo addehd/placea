@@ -1,7 +1,7 @@
 <script context="module">
-import { isUserLoggedIn } from './stores.js'
-//use the browser router if it's available
-//export const router = browser;
+import { isUserLoggedIn } from '../lib/stores.js'
+import {loginWithGoogle} from '$lib/loginGoogle.js';
+
 let isLogged;
 
 isUserLoggedIn.subscribe(value => {
@@ -11,3 +11,5 @@ isUserLoggedIn.subscribe(value => {
 </script>
 
 <h1>{isLogged}</h1>
+<button on:click={() => loginWithGoogle()}>Login</button>
+<h1>loginWithGoogle</h1>

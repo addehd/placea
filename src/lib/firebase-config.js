@@ -1,12 +1,10 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp, getApp, getApps } from 'firebase/app';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { browser } from '$app/env';
+//import authStore from '$app/routes/stores.js';  
+//console.log(authStore)
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+const config = {
   apiKey: "AIzaSyCiHKGFtCEBLTK8nUtUXedXE_unHL6vwkk",
   authDomain: "placea-a1487.firebaseapp.com",
   projectId: "placea-a1487",
@@ -14,8 +12,51 @@ const firebaseConfig = {
   messagingSenderId: "550842418859",
   appId: "1:550842418859:web:ce96de73b457d9966459ee",
   measurementId: "G-D9TF6LHZWW"
-};
+}
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+let firebaseApp;
+let auth;
+let unsubOnAuthStateChangedHandler;
+
+export function getFirebaseAuth() {
+	auth = getAuth(getFirebaseApp());
+	auth.useDeviceLanguage(); // applies the default browser language or use auth.languageCode = "fr";
+
+	if (browser) {
+		unsubOnAuthStateChangedHandler = onAuthStateChanged(auth, onAuthStateChangedHandler);
+	}
+	return auth;
+}
+
+function onAuthStateChangedHandler(user) {
+	if (user) {
+		console.log('user is logged in');
+   // authStore.set({});
+	} else {
+		unsubOnAuthStateChangedHandler();
+		console.log('user is logged out');
+	}
+}
+
+// firebaseApp
+export function getFirebaseApp() {
+	const firebaseAppConfig = getFirebaseConfig();
+	if (getApps.length === 0) {
+		firebaseApp = initializeApp(firebaseAppConfig);
+	} else {
+		firebaseApp = getApp();
+	}
+	return firebaseApp;
+}
+
+function getFirebaseConfig() {
+	if (!config || !config.apiKey) {
+		throw new Error(
+			'No Firebase configuration object provided.' +
+				'\n' +
+				"Add your web app's configuration object to firebase-config.js"
+		);
+	} else {
+		return config;
+	}
+}
